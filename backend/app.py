@@ -1,7 +1,14 @@
 from flask import Flask, jsonify, render_template
 from db import get_db_conn
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "supports_credentials": True,
+    "allow_headers": "*",
+    "methods": ["GET", "POST", "OPTIONS"]
+}})
 
 @app.route("/")
 def home():
