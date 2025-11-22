@@ -1,7 +1,14 @@
 from flask import Flask, jsonify, render_template
 from db import get_db_conn
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "supports_credentials": True,
+    "allow_headers": "*",
+    "methods": ["GET", "POST", "OPTIONS"]
+}})
 
 @app.route("/")
 def home():
@@ -22,3 +29,16 @@ def health():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/api/transaction_history")
+def api_transaction_history():
+    try:
+        conn = get_db_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM public.transaction_history ORDER BY 1 DESC LIMIT 100;")
+        cols = [d[0] for d in cur.description]
+        rows = [dict(zip(cols, r)) for r in cur.fetchall()]
+        cur.close(); conn.close()
+        return jsonify(rows), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
