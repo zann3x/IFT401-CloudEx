@@ -20,3 +20,23 @@
 .stocks-border {
     border-bottom: #ccc 1px solid;
 }
+
+.wishlist-icon {
+    color: #dc3545; 
+    transition: transform 0.2s ease-out; 
+    display: inline-block;
+    cursor: pointer;
+}
+
+.wishlist-icon.outline {
+    transform: scale(1);
+}
+
+.wishlist-icon-container:hover .wishlist-icon {
+    transform: scale(1.25);
+}
+
+.wishlist-icon-container:active .wishlist-icon {
+    transform: scale(0.8);
+    transition: transform 0s;
+}

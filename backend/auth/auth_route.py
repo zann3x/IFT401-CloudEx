@@ -1,5 +1,11 @@
 from flask import Blueprint, request, jsonify
-from .auth_repo import login_user, create_user, logout_user, get_user_id
+import bcrypt
+from .auth_repo import check_login_status, login_user, create_user, logout_user, get_user_id, getUserRoleByUserId
+
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_bytes.decode('utf-8')
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -33,8 +39,7 @@ def login():
 
     username = data.get('username')
     email = data.get('email')
-    password = data['password_hash'] 
-
+    plaintext_password = data['password_hash'] 
     if not username and not email:
         return jsonify({"error": "Missing username or email identifier."}), 400
     
@@ -44,7 +49,7 @@ def login():
         email = ""
 
     try:
-        user = login_user(email, username, password)
+        user = login_user(email, username, plaintext_password) 
         
         if user is None:
             return jsonify({"error": "Invalid login credentials."}), 401
@@ -62,6 +67,27 @@ def login():
         print(f"Login Error: {e}")
         return jsonify({"error": "An unexpected error occurred."}), 500
     
+@auth_bp.route('/get_role', methods=['GET'])
+def get_role():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter."}), 400
+
+    try:
+        role_name = getUserRoleByUserId(user_id) 
+        
+        if role_name is None:
+            return jsonify({"error": "User not found."}), 404
+        
+        return jsonify({
+            "status": "success",
+            "role_name": role_name 
+        }), 200
+        
+    except Exception as e:
+        print(f"Get Role Error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
 @auth_bp.route('/register', methods=['POST']) 
 def register_user():
     data = request.get_json()
@@ -72,13 +98,16 @@ def register_user():
 
     try:
         plaintext_password = data['password_hash'] 
+        hashed_password = hash_password(plaintext_password)
+        default_role_id = 0
+        user_role_id = data.get('user_role_id', default_role_id) 
 
         user_data = {
             'username': data['username'],
             'email': data['email'],
-            'password_hash': plaintext_password, 
+            'password_hash': hashed_password, 
+            'user_role_id': user_role_id
         }
-
         user_id = create_user(user_data) 
         
         return jsonify({
@@ -88,6 +117,7 @@ def register_user():
         }), 201
         
     except ValueError as e:
+        # Catches custom errors, e.g., 'Username already exists' (409 Conflict)
         return jsonify({"error": str(e)}), 409
         
     except Exception as e:
@@ -118,4 +148,22 @@ def fetch_user_id():
         
     except Exception as e:
         print(f"Fetch User ID Error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
+    
+@auth_bp.route('/check_login_status', methods=['GET'])
+def check_login_status_route():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter."}), 400
+
+    try:
+        is_logged_in = check_login_status(user_id)  
+        
+        return jsonify({
+            "status": "success",
+            "is_logged_in": is_logged_in
+        }), 200
+        
+    except Exception as e:
+        print(f"Check Login Status Error: {e}")
         return jsonify({"error": "An unexpected error occurred."}), 500

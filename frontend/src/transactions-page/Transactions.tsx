@@ -18,10 +18,10 @@ const Transactions:React.FC<TransactionsProps> = ({date, type, stockName, stockS
             <Card.Title>{type} - {stockName} ({stockSymbol})</Card.Title>
             <Card.Subtitle className="mb-2 text-muted">{date}</Card.Subtitle>
             <Card.Text>
-                Shares: {shares} @ ${pricePerShare.toFixed(2)} each
+                Shares: {shares} @ ${pricePerShare} each
             </Card.Text>
             <Card.Text>
-                Total Amount: ${totalAmount.toFixed(2)}
+                Total Amount: ${totalAmount}
             </Card.Text>
         </Card.Body>
     </Card>
