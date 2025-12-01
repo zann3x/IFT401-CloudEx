@@ -8,14 +8,17 @@ from .user.user_repo import update_portfolio_previous_value
 from .user.user_routes import user_bp
 from .auth.auth_route import auth_bp
 from .stock.stock_route import stock_bp
+from .market_hours.market_hours_route import market_hours_bp
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(user_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(stock_bp)
+app.register_blueprint(market_hours_bp)
+
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
@@ -50,5 +53,4 @@ def internal_error(error):
 
 if __name__ == "__main__":
     start_scheduler()
-    
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

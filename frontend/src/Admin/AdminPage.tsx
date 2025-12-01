@@ -7,6 +7,7 @@ import CreateUserModal, { type UserData } from './CreateUserModal';
 import RemoveUserModal from './RemoveUserModal';
 import { createStock, createUser, deleteStock, deleteUser, editStock, getStockId, getUserIdByEmail, getUserIdByUsername } from '../Api';
 import axios, { AxiosError } from 'axios';
+import MarketSettingsModal from "./MarketSettingsModal";
 
 // --- UTILITY FUNCTIONS DEFINED LOCALLY ---
 // Checks for a simple email pattern
@@ -28,6 +29,7 @@ const AdminPage = () => {
     const [showEditRemoveStockModal, setShowEditRemoveStockModal] = useState(false);
     const [showCreateUserModal, setShowCreateUserModal] = useState(false);
     const [showRemoveUserModal, setShowRemoveUserModal] = useState(false);
+    const [showMarketSettings, setShowMarketSettings] = useState(false);
 
     // Handlers
     const handleAddStockShow = () => setShowAddStockModal(true);
@@ -38,6 +40,8 @@ const AdminPage = () => {
     const handleCreateUserClose = () => setShowCreateUserModal(false);
     const handleRemoveUserShow = () => setShowRemoveUserModal(true);
     const handleRemoveUserClose = () => setShowRemoveUserModal(false);
+    const handleMarketSettingsShow = () => setShowMarketSettings(true);
+    const handleMarketSettingsClose = () => setShowMarketSettings(false);
 
 
     // --- STOCK CRUD HANDLERS ---
@@ -252,6 +256,22 @@ const AdminPage = () => {
                 </Col>
             </Row>
 
+                <Col md={4} sm={6}>
+                    <Card 
+                         className="shadow-sm h-100 text-center border-warning border-3"
+                           style={{ cursor: 'pointer' }}
+                         onClick={handleMarketSettingsShow}>
+                    <Card.Body>
+                        <FaEdit size={40} className="text-warning mb-3" />
+                         <Card.Title className="h5">Market Settings</Card.Title>
+                          <Card.Text className="text-muted">
+                               Change market hours and holidays.
+                          </Card.Text>
+                          <Button variant="warning" className="w-100 mt-2">Open Settings</Button>
+                     </Card.Body>
+                    </Card>
+                    </Col>
+
             {/* Modal Component */}
             <AddStockModal 
                 show={showAddStockModal} 
@@ -271,6 +291,11 @@ const AdminPage = () => {
             <RemoveUserModal
                 show={showRemoveUserModal}
                 handleClose={handleRemoveUserClose} onSubmit={handleDeleteUser} 
+            />
+
+            <MarketSettingsModal
+                show={showMarketSettings}
+                handleClose={handleMarketSettingsClose}
             />
 
         </Container>

@@ -7,9 +7,10 @@ import HomePage from './home-page/HomePage';
 import SignUp from './sign-up/SignUp';
 import SignIn from './sign-in/SignIn';
 import ResetPassword from './resest-password/ResetPassword';
-import AdminPage from './Admin/AdminPage';
+import AdminPage from './admin/AdminPage';
 import FundsPage from './funds-page/FundsPage';
 import ProfilePage from './profile-page/ProfilePage';
+import MarketSettings from "./admin/MarketSettings";
 
 interface RouteComponentProps {
     signedIn: boolean;
@@ -45,6 +46,7 @@ const RouteComponent: React.FC<RouteComponentProps> = ({ signedIn, role }) => {
             <Route path="/Profile" element={signedIn ? <ProfilePage /> : SignInRedirect} /> 
             <Route path="/Admin" element={signedIn ? DashboardRedirect : SignInRedirect} />
             <Route path="*" element={signedIn ? DashboardRedirect : SignInRedirect} />
+            <Route path="/admin/market-hours" element={<MarketSettings />} />
         </Routes>
     );
 };
