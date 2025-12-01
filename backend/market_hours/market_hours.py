@@ -1,18 +1,31 @@
-from datetime import datetime
-
-current_open = "09:30"
-current_close = "16:00"
+from .. import db
 
 def get_market_hours():
-    open_t = datetime.strptime(current_open, "%H:%M").time()
-    close_t = datetime.strptime(current_close, "%H:%M").time()
-    return open_t, close_t
+    conn = db.get_db_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT open_time, close_time FROM market_hours LIMIT 1;")
+    row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not row:
+        return None, None
+
+    return row[0], row[1]
+
 
 def set_market_hours(open_time_str, close_time_str):
-    global current_open, current_close
+    conn = db.get_db_conn()
+    cur = conn.cursor()
 
-    datetime.strptime(open_time_str, "%H:%M")
-    datetime.strptime(close_time_str, "%H:%M")
+    cur.execute("""
+        UPDATE market_hours
+        SET open_time = %s, close_time = %s
+        WHERE id = 1;
+    """, (open_time_str, close_time_str))
 
-    current_open = open_time_str
-    current_close = close_time_str
+    conn.commit()
+    cur.close()
+    conn.close()

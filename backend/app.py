@@ -9,6 +9,8 @@ from .user.user_routes import user_bp
 from .auth.auth_route import auth_bp
 from .stock.stock_route import stock_bp
 from .market_hours.market_hours_route import market_hours_bp
+from .market_hours.market_holidays_route import market_holidays_bp
+
 
 app = Flask(__name__)
 
@@ -18,6 +20,7 @@ app.register_blueprint(user_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(stock_bp)
 app.register_blueprint(market_hours_bp)
+app.register_blueprint(market_holidays_bp)
 
 
 def start_scheduler():

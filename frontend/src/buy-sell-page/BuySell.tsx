@@ -158,9 +158,14 @@ const BuySell: React.FC = () => {
                 setTransactionStatus('ERROR');
                 setMessage(result.message || 'Transaction failed');
             }
-        } catch {
+        } catch (err: any) {
             setTransactionStatus('ERROR');
-            setMessage('Insufficient funds or an error occurred during the transaction.');
+            if (err.response && err.response.data && err.response.data.error) {
+                setMessage(err.response.data.error);
+            } else if (err.message) {
+                setMessage(err.message);
+            } else {
+                setMessage('An unexpected error occurred.');}
         }
     };
 
